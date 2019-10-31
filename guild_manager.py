@@ -1,5 +1,5 @@
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 import asyncio
 import aiofiles
 import aiohttp
@@ -20,13 +20,19 @@ token = sys.argv[1]  # I've opted to just save my token to a text file.
 description = '''An example bot to showcase the discord.ext.commands extension
 module.
 There are a number of utility commands being showcased here.'''
+initial_extensions = ['cogs.warn']
 bot = commands.Bot(command_prefix='?', description=description, case_insensitive=True)
+
+if __name__ == '__main__':
+    for extension in initial_extensions:
+        bot.load_extension(extension)
 
 @bot.event
 async def on_ready():
     print('Logged in as')
     print(bot.user.name)
     print(bot.user.id)
+    print(f'\n\nLogged in as: {bot.user.name} - {bot.user.id}\nVersion: {discord.__version__}\n')
     print('------')
 
 
@@ -54,16 +60,17 @@ async def guild(ctx):
             await ctx.send('{0.subcommand_passed} is not a correct guild command'.format(ctx))
 
 @guild.command(name="list")
-async def _list(ctx,allycode: int):
+async def _list(ctx,allycode: int,with_codes = '0'):
     '''Prints all guild members from DB'''
     from operator import itemgetter
     database = "guild.db"
+    #if with_codes == "with": w
     conn = db_create_connection(database)
     with conn:
         guild_members_list=db_query_all_players(conn)
-        print("WTF")
+        #print("WTF")
         #await ctx.send( guild_members_list)
-    print(guild_members_list)
+    #print(guild_members_list)
    # guild_members_list=[ list(player).append(player[4]+player[5]) for player in guild_members_list]
     for idx, player in enumerate(guild_members_list):
         guild_members_list[idx]=list(player)
@@ -72,9 +79,17 @@ async def _list(ctx,allycode: int):
     guild_members_list.sort(key=itemgetter(6),reverse=True)
     longest_name=max( map(len,[x[2] for x in guild_members_list]) ) 
     reply="""```\n"""
+    allycodes = ""
     for pl in guild_members_list:
         #reply=reply+pl[0]+"\n"
-        reply=reply+f"""{pl[2]} {(longest_name-len(pl[2]))*" "} {pl[6]/1000000:.2f}M \n"""
+        if with_codes == "with": allycodes=f" ({pl[1]})"
+        reply_line = f"""{pl[2]}{allycodes} {(longest_name-len(pl[2]))*" "} {pl[6]/1000000:.2f}M \n"""
+        if len(reply+reply_line)>2000:
+            reply = reply+"\n```"
+            await ctx.send(reply)
+            reply="""```\n"""
+        else:
+            reply=reply+reply_line
     reply = reply+"\n```"
 #    await ctx.send(len(reply))
     await ctx.send(reply )
@@ -103,71 +118,7 @@ async def update(ctx,allycode: int):
     reply = reply+"\n```"
     await ctx.send(len(reply))
     #print(reply)
-    await ctx.send(reply )
-
-@bot.group(case_insensitive=True)
-async def warn(ctx):
-        if ctx.invoked_subcommand is None:
-            await ctx.send('{0.subcommand_passed} is not a correct guild command'.format(ctx))  
-
-@warn.command(name="add")
-async def add_warn(ctx,allycode:int,*args):
-    await ctx.send(allycode)
-    await ctx.send(" ".join(args))
-    await ctx.send("New warning") 
-    database = "guild.db"
-    conn = db_create_connection(database)
-    with conn:
-        if db_player_in_guild(conn,allycode):
-            date = datetime.now().strftime("%d/%m/%Y")
-            db_add_warn(conn,[allycode,date," ".join(args)])
-            await ctx.send("A strike has been added")
-        else:
-            await ctx.send("Error: player with this allycode is not in the guild. Did you boot him already?")
-
-@add_warn.error
-async def add_warn_error(ctx,error):
-    print(type(error))
-    print(dir(error))
-    await ctx.send(error)
-    if isinstance(error, commands.BadArgument):
-        print(type(error))
-        print(error)
-        await ctx.send(error)
-        await ctx.send('I could not find that member...')
-
-@warn.command(name="list")
-async def list_warn(ctx):
-    database = "guild.db"
-    conn = db_create_connection(database)
-    with conn:
-        warnings = db_list_warn(conn)
-    warn_formated=defaultdict(list)
-    print(warnings)
-    for w in warnings:
-        warn_formated[tuple(w[:2])].append(w[2:])
-    reply="""```md\n **LIST OF WARNINGS**\n"""
-    for key,values in warn_formated.items():
-        name_code=f"{key[0]} {key[1]}:\n"
-        reply+=name_code
-        for w in values:
-            reply+=f"""\t{w[0]}, {w[1]}\t id: {w[2]}\n"""
-    print(reply)
-    reply = reply+"\n```"
     await ctx.send(reply)
-
-
-@warn.command(name="remove")
-async def remove_warn(ctx,id:int):
-    database = "guild.db"
-    conn = db_create_connection(database)
-    print (type(id))
-    with conn:
-        db_dell_warn(conn,id)
-    await ctx.send("Remove warning")
-
-
-
 
 @bot.command(aliases=['stop','exit'])
 async def logout(ctx):
@@ -177,3 +128,6 @@ async def logout(ctx):
 
 
 bot.run(token)
+
+def foo() -> int:
+    return "foo"
