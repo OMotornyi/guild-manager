@@ -17,9 +17,7 @@ from datetime import datetime
 token = sys.argv[1]  # I've opted to just save my token to a text file. 
 
 
-description = '''An example bot to showcase the discord.ext.commands extension
-module.
-There are a number of utility commands being showcased here.'''
+description = '''A simple discord bot with some SWGOH guild managment utilities'''
 initial_extensions = ['cogs.warn']
 bot = commands.Bot(command_prefix='?', description=description, case_insensitive=True)
 
@@ -51,11 +49,11 @@ async def players(ctx,allycode: int):
 
 @bot.group(case_insensitive=True)
 async def guild(ctx):
-        await ctx.send(ctx.command)
+        #await ctx.send(ctx.command)
         #await ctx.send(ctx.message)
-        await ctx.send(ctx.args)
-        await ctx.send(f" the command was invoked with {ctx.invoked_with}")
-        await ctx.send(f"and we passed a sub:{ctx.subcommand_passed}")
+        #await ctx.send(ctx.args)
+        #await ctx.send(f" the command was invoked with {ctx.invoked_with}")
+        #await ctx.send(f"and we passed a sub:{ctx.subcommand_passed}")
         if ctx.invoked_subcommand is None:
             await ctx.send('{0.subcommand_passed} is not a correct guild command'.format(ctx))
 
