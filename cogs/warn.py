@@ -14,16 +14,18 @@ class WarnCog(commands.Cog):
         self.seconds = 5
         self.minutes = 0
         self.hours = 0
-        self.printer.start()
         self.warn_cleanup.start()
 
     @commands.group(case_insensitive=True)
     async def warn(self, ctx):
-            if ctx.invoked_subcommand is None:
-                await ctx.send('{0.subcommand_passed} is not a correct guild command'.format(ctx))  
+        '''A set of commands for giving guild players strikes for missing 600 or anything else.'''
+        if ctx.invoked_subcommand is None:
+            await ctx.send('{0.subcommand_passed} is not a correct guild command'.format(ctx))  
 
     @warn.command(name="add")
     async def add_warn(self, ctx,allycode:int,date_input:str,*, args):
+        '''Adds a warning for the player with given allycode and a reason.
+        Optional: if you want a waring with an older date input it after the player allycode '''
         await ctx.send(allycode)
         await ctx.send(args)
         try:
@@ -57,6 +59,7 @@ class WarnCog(commands.Cog):
 
     @warn.command(name="list")
     async def list_warn(self, ctx):
+        '''Lists all warnings'''
         database = "guild.db"
         conn = db_create_connection(database)
         with conn:
@@ -71,7 +74,7 @@ class WarnCog(commands.Cog):
             reply+=name_code
             for w in values:
                 days_delta = (datetime.now()-datetime.strptime(w[0],"%d/%m/%Y")).days
-                reply+=f"""\t{days_delta} days ago ({w[0]}), {w[1]}\t id: {w[2]}\n"""
+                reply+=f"""\t{days_delta} day(s) ago ({w[0]}), {w[1]}\t id: {w[2]}\n"""
         print(reply)
         reply = reply+"\n```"
         await ctx.send(reply)
@@ -79,6 +82,7 @@ class WarnCog(commands.Cog):
 
     @warn.command(name="remove")
     async def remove_warn(self, ctx,id:int):
+        '''Removes a warning with a given id (look up the id through the "warn list" command) '''
         database = "guild.db"
         conn = db_create_connection(database)
         print (type(id))
@@ -86,10 +90,6 @@ class WarnCog(commands.Cog):
             db_dell_warn(conn,id)
         await ctx.send("Remove warning")
 
- 
-    @tasks.loop(seconds=5)
-    async def printer(self):
-        self.count+=1
     @tasks.loop(hours=24)
     async def warn_cleanup(self):
         database = "guild.db"
@@ -101,12 +101,9 @@ class WarnCog(commands.Cog):
                 if days_delta>60:
                     db_dell_warn(conn,w[4]) 
                     print(f"warning removed:{w}")
-    @commands.command()
-    async def counter(self,ctx):
-        await ctx.send(self.count)
-    @commands.command()
-    async def increase_loop(self,ctx):
-        self.minutes+=1
-        self.printer.change_interval(minutes = self.minutes)
+#    @commands.command()
+#    async def increase_loop(self,ctx):
+#        self.warn_cleanup.change_interval(hours = 24)
+
 def setup(bot):
             bot.add_cog(WarnCog(bot))

@@ -82,12 +82,12 @@ def db_query_all_players(conn):
 def db_update_player(conn,player):
     """Insert the new player data or update if the player is already in DB"""
     sql = '''UPDATE OR IGNORE players
-            set updated=?, gpships = ?, gpchars = ?
+            set updated=?, gpships = ?, gpchars = ?, name = ?
             where allycode = ?'''
     cur = conn.cursor()
-    cur.execute(sql,player[0:4])
+    cur.execute(sql,player[:])
     sql = '''INSERT OR IGNORE INTO
-     players (updated, gpships,gpchars,allycode,name)
+     players (updated, gpships,gpchars,name,allycode)
      VALUES(?,?,?,?,?)'''
     cur = conn.cursor()
     cur.execute(sql,player)   
