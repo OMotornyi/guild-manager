@@ -1,5 +1,6 @@
 from discord.ext import commands,tasks
 import discord
+import asyncio
 from collections import defaultdict
 from swgoh_db import db_query_player_id, db_update_player,db_create_connection,db_add_warn, db_query_all_players,db_player_in_guild
 from swgoh_db import db_list_warn, db_dell_warn
