@@ -46,6 +46,7 @@ class WarnCog(commands.Cog):
         embed.add_field(name='Allycode', value=allycode)
         embed.add_field(name='Date', value=date)
         embed.add_field(name='Reason', value=args)
+        embed.add_field(name='Command Invoker', value=ctx.author.mention)
 #        embed.set_footer(text='Made in Python with discord.py@rewrite', icon_url='http://i.imgur.com/5BFecvA.png')
         msg = await ctx.send( embed=embed)
         await msg.add_reaction("\u2705")
