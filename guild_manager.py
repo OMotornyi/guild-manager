@@ -7,11 +7,12 @@ import aiohttp
 import sys
 import sqlite3
 from sqlite3 import Error
-from swgoh_db import db_query_player_id, db_update_player,db_create_connection,db_add_warn, db_query_all_players,db_player_in_guild
-from swgoh_db import db_list_warn, db_dell_warn
-from collections import defaultdict
+#from swgoh_db import db_query_player_id, db_update_player,db_create_connection,db_add_warn, db_query_all_players,db_player_in_guild
+#from swgoh_db import db_list_warn, db_dell_warn
+#from collections import defaultdict
 #import swgoh_db as swdb
-from swgoh_api import get_guild_full,get_guild_members, CONFIG
+#from swgoh_api import get_guild_full,get_guild_members, CONFIG
+#from swgohhelp import CONFIG, fetch_guilds
 from datetime import datetime
 
 token = sys.argv[1]  # I've opted to just save my token to a text file. 

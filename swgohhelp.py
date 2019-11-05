@@ -217,13 +217,15 @@ async def fetch_guilds(config, project):
 
     ally_codes = project['allycodes']
     guilds = await api_swgoh_guilds(config, project)
-    print(guilds)
+    return guilds
+    #print(guilds)
     print(project)
     #return guilds
     result = {}
     for guild in guilds:
 
         guild['roster'] = get_units_dict(guild['roster'], 'allyCode')
+        print(guild)
         for ally_code in ally_codes:
             print(ally_code)
             if ally_code in guild['roster']:

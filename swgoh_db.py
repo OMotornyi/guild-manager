@@ -79,6 +79,20 @@ def db_query_all_players(conn):
     cur = conn.cursor()
     cur.execute(sql)
     return cur.fetchall()
+
+def db_search_all_players(conn,name):
+    """Get the GP data for all players with matching names that were in the guild on the last update"""
+    sql = '''SELECT
+    *
+    FROM
+    players
+    WHERE
+    updated = (SELECT max(updated) FROM players)
+    AND name like ?;'''
+    cur = conn.cursor()
+    cur.execute(sql,(f"%{name}%",))
+    return cur.fetchall()
+
 def db_update_player(conn,player):
     """Insert the new player data or update if the player is already in DB"""
     sql = '''UPDATE OR IGNORE players
