@@ -27,36 +27,26 @@ class WarnCog(commands.Cog):
     async def add_warn(self, ctx,allycode:int,date_input:str,*, args):
         '''Adds a warning for the player with given allycode and a reason.
         Optional: if you want a waring with an older date input it after the player allycode.
-        Example: "?warn add 928428534 stop lossbering FFS!" to add warning for today or
-        "?warn add 928428534 10/09 stop lossbering FFS!" to add warning for 10th September. '''
-        #await ctx.send(allycode)
-        #await ctx.send(args)
+        Example: "?warn add 928428534 stop lossbering FFS!" to add warning for today or "?warn add 928428534 10/09 stop lossbering FFS!" to add warning for 10th September. '''
+
         try:
-            #date = datetime.strptime(date_input,"%d/%m/%Y")
             date = dateutil.parser.parse(date_input,dayfirst = True)
             date = date.strftime("%d/%m/%Y")
         except ValueError:
             args = date_input +" " + args
             date = datetime.now().strftime("%d/%m/%Y")        
-        #await ctx.send("New warning") 
-       # warn_content = f"Do you want to add a following warning: 'allycode': {allycode}, 'date': {date}, 'reason': {args}"
         embed = discord.Embed(title='',
                               description="Do you want to add a following warning:",
                               colour=0x98FB98)
-
         embed.add_field(name='Allycode', value=allycode)
         embed.add_field(name='Date', value=date)
         embed.add_field(name='Reason', value=args)
         embed.add_field(name='Command Invoker', value=ctx.author.mention)
-#        embed.set_footer(text='Made in Python with discord.py@rewrite', icon_url='http://i.imgur.com/5BFecvA.png')
         msg = await ctx.send( embed=embed)
         await msg.add_reaction("\u2705")
-        #await msg.add_reaction("\u274E")
         await msg.add_reaction("\u274C")
         def check(reaction, user):
             return user == ctx.author and (str(reaction.emoji) == "\u2705" or str(reaction.emoji) =="\u274C")
-        #msg = await ctx.send()
-
         try:
             reaction, user = await self.bot.wait_for('reaction_add', timeout=120.0, check=check)
         except asyncio.TimeoutError:
@@ -72,12 +62,10 @@ class WarnCog(commands.Cog):
                 conn = db_create_connection(database)
                 with conn:
                     if db_player_in_guild(conn,allycode):
-                        #date = datetime.now().strftime("%d/%m/%Y")
                         db_add_warn(conn,[allycode,date,args])
                         await ctx.send("A strike has been added")
                     else:
                         await ctx.send("Error: player with this allycode is not in the guild. Did you boot him already?")
-
     @add_warn.error
     async def add_warn_error(self, ctx,error):
         print(type(error))
