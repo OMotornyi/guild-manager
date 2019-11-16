@@ -104,6 +104,15 @@ def db_update_player(conn,player):
      players (updated, gpships,gpchars,name,allycode)
      VALUES(?,?,?,?,?)'''
     cur = conn.cursor()
+    cur.execute(sql,player)
+    player = list(player)   
+    print(player)
+    player.pop(3)
+    print(player)
+    sql = '''INSERT INTO
+     gp_history (updated, gpships,gpchars,allycode)
+     VALUES(?,?,?,?)'''
+    cur = conn.cursor()
     cur.execute(sql,player)   
     return cur.lastrowid
 

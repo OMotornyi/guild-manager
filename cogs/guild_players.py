@@ -34,21 +34,8 @@ class PlayersCog(commands.Cog):
     async def guild(self, ctx):
         '''Set of commands to interact with the whole guild'''
         if ctx.invoked_subcommand is None:
-                msg = await ctx.send('{0.subcommand_passed} is not a correct guild command'.format(ctx))
-                #await msg.add_reaction("✅")
-                await msg.add_reaction("\u2705")
-                #await msg.add_reaction("\u274E")
-                await msg.add_reaction("\u274C")
-                def check(reaction, user):
-                    return user == ctx.author and str(reaction.emoji) == "\u2705"
+                await ctx.send('{0.subcommand_passed} is not a correct guild command'.format(ctx))
 
-                try:
-                    reaction, user = await self.bot.wait_for('reaction_add', timeout=60.0, check=check)
-                except asyncio.TimeoutError:
-                    await ctx.send('👎')
-                else:
-                    await ctx.send('👍')
-                    await msg.delete()
 
     @guild.command(name="list")
     async def _list(self, ctx,allycode: int,with_codes = '0'):
