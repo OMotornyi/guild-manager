@@ -5,12 +5,16 @@ import sqlite3
 import asyncio
 from sqlite3 import Error
 from swgoh_db import db_query_player_id, db_update_player,db_create_connection,db_add_warn, db_query_all_players,db_player_in_guild
-from swgoh_db import db_list_warn, db_dell_warn, db_search_all_players
+from swgoh_db import db_list_warn, db_dell_warn, db_search_all_players, db_query_gp_history
 from collections import defaultdict
 #import swgoh_db as swdb
 #from swgoh_api import get_guild_full,get_guild_members, CONFIG
 from swgohhelp import CONFIG, fetch_guilds
 from datetime import datetime
+import seaborn as sns
+from matplotlib import pyplot as plt
+from matplotlib.dates import DateFormatter
+import pandas as pd
 
 
 class PlayersCog(commands.Cog):
@@ -113,8 +117,41 @@ class PlayersCog(commands.Cog):
         await ctx.send(reply )
     #   await ctx.send("Command to print guild members list")
 
-
-
+    @guild.group(case_insensitive=True)
+    async def gp(self,ctx):
+        '''Set of commands to interact with the gp history'''
+        if ctx.invoked_subcommand is None:
+                await ctx.send('{0.subcommand_passed} is not a correct guild command'.format(ctx))
+    @gp.command()
+    async def average(self,ctx,gp_type="Total"):
+        """Plots the average guild GP over time. As parameters accepts: Total, GP_Ships, GP_Chars"""
+        database = "guild_rpi.db"
+        conn = db_create_connection(database)
+        with conn:
+                    guild_list = db_query_all_players(conn)
+                    allyC=[p[1] for p in guild_list]
+                    guild_list = db_query_gp_history(conn,allyC)
+        df = pd.DataFrame(guild_list,columns=["id","allycode","Date","GP_Ships","GP_Chars"]).set_index("id")
+        df.rename_axis(None,inplace=True)
+        df['Date']=df['Date'].astype("datetime64[ms]")
+        df["GP_Ships"]=df["GP_Ships"]/10**6
+        df["GP_Chars"]=df["GP_Chars"]/10**6
+        df["Total"]=df["GP_Ships"]+df["GP_Chars"]
+        x_min = df['Date'].min()
+        x_max = df['Date'].max()
+        delt = (x_max - x_min)/10
+        fig, ax = plt.subplots(figsize=(10,10))
+        date_form = DateFormatter("%d.%m")
+        ax.xaxis.set_major_formatter(date_form)
+        plt.xlim((x_min-delt,x_max+delt))
+        sns.set(style="ticks", context="talk")
+        plt.style.use("dark_background")
+        ax.set_title("Average Guild GP:"+gp_type)
+        sns.lineplot(data = df,x ="Date",y=gp_type,marker="o",ax=ax,markersize=15,linewidth=10)
+        plt.savefig("avg_gp.png")
+        file = discord.File("avg_gp.png", filename="avg_gp.png")
+        await ctx.send(file=file)
+    
     @guild.command()
     async def update(self, ctx,allycode: int):
         """Updated the list of guild members in DB """

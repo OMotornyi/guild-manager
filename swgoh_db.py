@@ -80,6 +80,19 @@ def db_query_all_players(conn):
     cur.execute(sql)
     return cur.fetchall()
 
+def db_query_gp_history(conn,codes):
+    """Get the GP history data for all players that were in the guild on the last update"""
+    sql = '''SELECT
+    *
+    FROM
+    gp_history
+    WHERE
+    allycode IN (%s)'''% ','.join("?"*len(codes))
+    cur = conn.cursor()
+    print(sql)
+    cur.execute(sql,codes)
+    return cur.fetchall()
+
 def db_search_all_players(conn,name):
     """Get the GP data for all players with matching names that were in the guild on the last update"""
     sql = '''SELECT
