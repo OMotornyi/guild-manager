@@ -114,6 +114,7 @@ class WarnCog(commands.Cog):
     async def warn_cleanup(self):
         database = "guild.db"
         conn = db_create_connection(database)
+        print("CLEANUP")
         with conn:
             warnings = db_list_warn(conn)
             for w in warnings:

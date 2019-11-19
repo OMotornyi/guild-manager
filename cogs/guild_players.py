@@ -58,11 +58,13 @@ class PlayersCog(commands.Cog):
         guild_members_list.sort(key=itemgetter(6),reverse=True)
         longest_name=max( map(len,[x[2] for x in guild_members_list]) ) 
         reply="""```\n"""
+        header=f'''Name {"(Allycode)" if with_codes=='with' else ""}{(longest_name-4)*" "}   GP  Ships Chars\n'''
+        reply+=header
         allycodes = ""
         for pl in guild_members_list:
             #reply=reply+pl[0]+"\n"
             if with_codes == "with": allycodes=f" ({pl[1]})"
-            reply_line = f"""{pl[2]}{allycodes} {(longest_name-len(pl[2]))*" "} {pl[6]/1000000:.2f}M \n"""
+            reply_line = f"""{pl[2]}{allycodes} {(longest_name-len(pl[2]))*" "} {pl[6]/1000000:.2f}M {pl[4]/1000000:.2f}M {pl[5]/1000000:.2f}M \n"""
             if len(reply+reply_line)>2000:
                 reply = reply+"\n```"
                 await ctx.send(reply)
