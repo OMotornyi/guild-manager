@@ -15,6 +15,7 @@ import seaborn as sns
 from matplotlib import pyplot as plt
 from matplotlib.dates import DateFormatter
 import pandas as pd
+from pandas.plotting import register_matplotlib_converters
 
 
 class PlayersCog(commands.Cog):
@@ -126,6 +127,7 @@ class PlayersCog(commands.Cog):
     async def average(self,ctx,gp_type="Total"):
         """Plots the average guild GP over time. As parameters accepts: Total, GP_Ships, GP_Chars"""
         database = "guild.db"
+        register_matplotlib_converters()
         conn = db_create_connection(database)
         with conn:
                     guild_list = db_query_all_players(conn)
