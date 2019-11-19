@@ -125,7 +125,7 @@ class PlayersCog(commands.Cog):
     @gp.command()
     async def average(self,ctx,gp_type="Total"):
         """Plots the average guild GP over time. As parameters accepts: Total, GP_Ships, GP_Chars"""
-        database = "guild_rpi.db"
+        database = "guild.db"
         conn = db_create_connection(database)
         with conn:
                     guild_list = db_query_all_players(conn)
