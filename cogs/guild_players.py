@@ -150,7 +150,7 @@ class PlayersCog(commands.Cog):
         plt.style.use("dark_background")
         ax.set_title("Average Guild GP:"+gp_type)
         if allycode:
-            sns.lineplot(data = df[df['allycode']==allycode],x ="Date",y="GP_Chars",
+            sns.lineplot(data = df[df['allycode']==allycode],x ="Date",y=gp_type,
                 marker="o",ax=ax,markersize=1,linewidth=1)
 #        plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.,ncol=2)
         sns.lineplot(data = df,x ="Date",y=gp_type,marker="o",ax=ax,markersize=15,linewidth=10)
