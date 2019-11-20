@@ -155,6 +155,7 @@ class PlayersCog(commands.Cog):
 #        plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.,ncol=2)
         sns.lineplot(data = df,x ="Date",y=gp_type,marker="o",ax=ax,markersize=15,linewidth=10)
         plt.savefig("avg_gp.png")
+        plt.close(fig)
         file = discord.File("avg_gp.png", filename="avg_gp.png")
         await ctx.send(file=file)
     

@@ -17,6 +17,28 @@ class WarnCog(commands.Cog):
         self.hours = 0
         self.warn_cleanup.start()
 
+    async def cog_check(self, ctx):
+        roles=[str(role) for role in ctx.author.roles]
+        if "Officers" in roles:  
+            return True      
+        #else:
+        #    await ctx.send("You miss permissions")
+        #return await self.bot.is_owner(ctx.author)
+    
+    async def cog_command_error(self, ctx, error):
+        if isinstance(error,commands.CheckFailure):
+            await ctx.send("You miss permissions")
+        else:
+            raise error
+
+        #return super().cog_command_error(ctx, error)
+
+    @commands.command()
+    async def role(self,ctx):
+        roles=[str(role) for role in ctx.author.roles]
+        if "Inner Circle" in roles:
+            await ctx.send("YES")
+
     @commands.group(case_insensitive=True)
     async def warn(self, ctx):
         '''A set of commands for giving guild players strikes for missing 600 or anything else.'''
