@@ -117,7 +117,7 @@ class WarnCog(commands.Cog):
             for w in values:
                 days_delta = (datetime.now()-datetime.strptime(w[0],"%d/%m/%Y")).days
                 reply_line = f"""\t{days_delta} day(s) ago ({w[0]}), {w[1]}\t id: {w[2]}\n"""
-                if len(reply+reply_line)>2000:
+                if len(reply+reply_line)>=1995:
                     reply = reply+"\n```"
                     await ctx.send(reply)
                     reply="""```\n"""+reply_line
