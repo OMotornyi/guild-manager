@@ -116,8 +116,15 @@ class WarnCog(commands.Cog):
             reply+=name_code
             for w in values:
                 days_delta = (datetime.now()-datetime.strptime(w[0],"%d/%m/%Y")).days
-                reply+=f"""\t{days_delta} day(s) ago ({w[0]}), {w[1]}\t id: {w[2]}\n"""
-        print(reply)
+                reply_line = f"""\t{days_delta} day(s) ago ({w[0]}), {w[1]}\t id: {w[2]}\n"""
+                if len(reply+reply_line)>2000:
+                    reply = reply+"\n```"
+                    await ctx.send(reply)
+                    reply="""```\n"""+reply_line
+                else:
+                    reply=reply+reply_line
+                #reply+=f"""\t{days_delta} day(s) ago ({w[0]}), {w[1]}\t id: {w[2]}\n"""
+        #print(reply)
         reply = reply+"\n```"
         await ctx.send(reply)
 

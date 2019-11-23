@@ -175,6 +175,13 @@ class PlayersCog(commands.Cog):
         '''Set of commands to interact with the gp history'''
         if ctx.invoked_subcommand is None:
                 await ctx.send('{0.subcommand_passed} is not a correct guild command'.format(ctx))
+    
+    @gp.command()
+    async def plot(self,ctx,gp_type, *allycodes: int):
+        print(allycodes)
+        if len(allycodes)==0:
+            print("empty")
+    
     @gp.command()
     async def average(self,ctx,gp_type="Total",allycode:int =None):
         """Plots the average guild GP over time. As parameters accepts: Total, GP_Ships, GP_Chars"""
