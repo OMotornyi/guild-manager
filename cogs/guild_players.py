@@ -36,10 +36,62 @@ class PlayersCog(commands.Cog):
     #     await ctx.send(reply )
 
     @commands.group(case_insensitive=True)
+    async def tb(self,ctx):
+        '''Set of commands to log in and review guild's tb activity'''
+        if ctx.invoked_subcommand is None:
+                await ctx.send('{0.subcommand_passed} is not a correct guild command'.format(ctx))        
+
+
+    
+    async def tb_message(self,ctx,player,phase):
+        embed = discord.Embed(title='',
+        description=f"Did **{player[2]}** complete the special mission in phase {phase}?",
+                                colour=0x98FB98)
+        embed.add_field(name='Allycode', value=player[1])
+        #embed.add_field(name='Date', value=date)
+        msg = await ctx.send( embed=embed)
+        await msg.add_reaction("\u2705")
+        await msg.add_reaction("\u274C")
+        def check(reaction, user):
+            #print(ctx.author)
+            #print(user)
+            print(f'Reaction message id: {reaction.message.id} actual message id: {msg.id}')
+            return reaction.message.id==msg.id and  user == ctx.author and (str(reaction.emoji) == "\u2705" or str(reaction.emoji) =="\u274C")
+        try:
+           reaction, user = await self.bot.wait_for('reaction_add', timeout=900.0, check=check)
+        except asyncio.TimeoutError:
+           await msg.delete()
+        else:
+           if str(reaction.emoji) =="\u274C":
+               await msg.delete()
+               await ctx.send("Failed",delete_after=30)
+           elif str(reaction.emoji) == "\u2705":
+                await msg.delete()
+                await ctx.send("Completed",delete_after=30)
+                # with conn:
+                #     if db_player_in_guild(conn,allycode):
+                #        db_add_warn(conn,[allycode,date,args])
+                #        await ctx.send("Completed")
+                #     else:
+                #        await ctx.send("Error: player with this allycode is not in the guild. Did you boot him already?")        
+
+
+    @tb.command()
+    async def sm(self,ctx,phase:int):
+        database = "guild.db"
+        #if with_codes == "with": w
+        conn = db_create_connection(database)
+        with conn:
+            guild_members_list=db_query_all_players(conn)
+        for player in guild_members_list:
+            asyncio.create_task(self.tb_message(ctx,player,phase))
+    
+    @commands.group(case_insensitive=True)
     async def guild(self, ctx):
         '''Set of commands to interact with the whole guild'''
         if ctx.invoked_subcommand is None:
                 await ctx.send('{0.subcommand_passed} is not a correct guild command'.format(ctx))
+
 
 
     @guild.command(name="list")
