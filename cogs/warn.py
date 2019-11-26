@@ -106,12 +106,15 @@ class WarnCog(commands.Cog):
         conn = db_create_connection(database)
         with conn:
             warnings = db_list_warn(conn)
+            guild_members_list=db_query_all_players(conn)
+            guild_members_code = [pl[1] for pl in guild_members_list]
         warn_formated=defaultdict(list)
         print(warnings)
         for w in warnings:
             warn_formated[tuple(w[:2])].append(w[2:])
         reply="""```md\n **LIST OF WARNINGS**\n"""
         for key,values in warn_formated.items():
+            if key[1] not in guild_members_code: continue
             name_code=f"{key[0]} {key[1]}:\n"
             reply+=name_code
             for w in values:
