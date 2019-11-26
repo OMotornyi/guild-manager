@@ -14,6 +14,7 @@ from sqlite3 import Error
 #from swgoh_api import get_guild_full,get_guild_members, CONFIG
 #from swgohhelp import CONFIG, fetch_guilds
 from datetime import datetime
+from matplotlib import use as mpl_backend_use()
 
 token = sys.argv[1]  # I've opted to just save my token to a text file. 
 
@@ -33,6 +34,7 @@ async def on_ready():
     print(bot.user.id)
     print(f'\n\nLogged in as: {bot.user.name} - {bot.user.id}\nVersion: {discord.__version__}\n')
     print('------')
+    mpl_backend_use("AGG")
 
 
 
